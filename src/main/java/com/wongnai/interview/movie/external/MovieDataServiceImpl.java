@@ -2,16 +2,13 @@ package com.wongnai.interview.movie.external;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 @Component
 public class MovieDataServiceImpl implements MovieDataService {
