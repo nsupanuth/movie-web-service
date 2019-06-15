@@ -1,14 +1,12 @@
 package com.wongnai.interview.movie.external;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wongnai.interview.movie.exception.InternalServerErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestOperations;
-
-import java.io.IOException;
 
 @Component
 public class MovieDataServiceImpl implements MovieDataService {
@@ -28,14 +26,14 @@ public class MovieDataServiceImpl implements MovieDataService {
 		// Please noted that you must only read data remotely and only from given source,
 		// do not download and use local file or put the file anywhere else.
 
-		MoviesResponse moviesResponse = null;
+		MoviesResponse moviesResponse;
 		try {
 			ResponseEntity<String> result = restTemplate.getForEntity(MOVIE_DATA_URL, String.class);
 			moviesResponse = objectMapper.readValue(result.getBody(), MoviesResponse.class);
-		} catch (JsonParseException | JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (HttpClientErrorException e) {
+			throw new InternalServerErrorException(e.getMessage(), MovieDataServiceImpl.class.getName(), "httpClientErrorException");
+		} catch (Exception e) {
+			throw new InternalServerErrorException(e.getMessage(), MovieDataServiceImpl.class.getName(), "exception");
 		}
 
 		return moviesResponse;
