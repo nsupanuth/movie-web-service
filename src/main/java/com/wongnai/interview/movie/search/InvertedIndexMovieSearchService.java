@@ -1,14 +1,13 @@
 package com.wongnai.interview.movie.search;
 
-import java.util.*;
-
+import com.wongnai.interview.movie.Movie;
+import com.wongnai.interview.movie.MovieRepository;
+import com.wongnai.interview.movie.MovieSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
-import com.wongnai.interview.movie.Movie;
-import com.wongnai.interview.movie.MovieRepository;
-import com.wongnai.interview.movie.MovieSearchService;
+import java.util.*;
 
 @Component("invertedIndexMovieSearchService")
 @DependsOn("movieDatabaseInitializer")
@@ -36,6 +35,45 @@ public class InvertedIndexMovieSearchService implements MovieSearchService {
         // By the way, in this assignment, you must use intersection so that it left for just movie id 5.
 
         List<Movie> movies = movieRepository.findAll();
+        Map<String, HashSet<Long>> moviesInvertTableMap = getInvertedIndexHashSetMap(movies);
+
+        String[] queryTexts = queryText.split("\\s+");
+
+        boolean isOneSearchKeyNotFound = !moviesInvertTableMap.containsKey(queryText.toLowerCase()) && queryTexts.length == 1;
+
+        if (isOneSearchKeyNotFound) {
+            return new ArrayList<>();
+        }
+
+        HashSet<Long> indexResult = getIntersectionSetResult(queryText, moviesInvertTableMap, queryTexts);
+
+        List<Movie> searchResult = new ArrayList<>();
+        indexResult.forEach(i -> {
+            Optional<Movie> movieResultOptional = movies.stream().filter(movie -> movie.getId().equals(i)).findFirst();
+            movieResultOptional.ifPresent(searchResult::add);
+        });
+
+        return searchResult;
+    }
+
+    private HashSet<Long> getIntersectionSetResult(String queryText, Map<String, HashSet<Long>> moviesInvertTableMap, String[] queryTexts) {
+        HashSet<Long> indexResult = new HashSet<>();
+        if (queryTexts.length > 1) {
+            for (String text : queryTexts) {
+                String textLower = text.toLowerCase();
+                if (indexResult.isEmpty() && moviesInvertTableMap.containsKey(textLower)) {
+                    indexResult = moviesInvertTableMap.get(textLower);
+                } else {
+                    indexResult.retainAll(moviesInvertTableMap.containsKey(textLower) ? moviesInvertTableMap.get(textLower) : Collections.EMPTY_SET);
+                }
+            }
+        } else {
+            indexResult = moviesInvertTableMap.get(queryText.toLowerCase());
+        }
+        return indexResult;
+    }
+
+    private Map<String, HashSet<Long>> getInvertedIndexHashSetMap(List<Movie> movies) {
         Map<String, HashSet<Long>> moviesInvertTableMap = new HashMap<>();
         movies.forEach(movie -> {
             String[] splitMovieNames = movie.getName().split("\\s+");
@@ -51,18 +89,6 @@ public class InvertedIndexMovieSearchService implements MovieSearchService {
                 }
             });
         });
-
-        if (!moviesInvertTableMap.containsKey(queryText.toLowerCase())) {
-            return new ArrayList<>();
-        }
-
-        HashSet<Long> indexResult = moviesInvertTableMap.get(queryText.toLowerCase());
-        List<Movie> searchResult = new ArrayList<>();
-        indexResult.forEach(i -> {
-            Optional<Movie> movieResultOptional = movies.stream().filter(movie -> movie.getId().equals(i)).findFirst();
-            movieResultOptional.ifPresent(searchResult::add);
-        });
-
-        return searchResult;
+        return moviesInvertTableMap;
     }
 }
