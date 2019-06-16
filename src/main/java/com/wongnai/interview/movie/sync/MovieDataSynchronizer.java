@@ -25,10 +25,6 @@ public class MovieDataSynchronizer {
         //TODO: implement this to sync movie into repository
         if (movieRepository.findAll().isEmpty()) {
             MoviesResponse moviesResponse = movieDataService.fetchAll();
-
-
-
-
             List<Movie> movies = moviesResponse
                     .stream()
                     .map(MovieUtils::mapMovieDataToMovie)

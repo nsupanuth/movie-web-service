@@ -45,7 +45,7 @@ public class InvertedIndexMovieSearchService implements MovieSearchService, Init
         // you have to return can be union or intersection of those 2 sets of ids.
         // By the way, in this assignment, you must use intersection so that it left for just movie id 5.
 
-        Map<String, HashSet<Long>> moviesInvertTableMap = getInvertedIndexHashSetMap(movies);
+        Map<String, TreeSet<Long>> moviesInvertTableMap = getInvertedIndexHashSetMap(movies);
 
         String[] queryTexts = queryText.split("\\s+");
 
@@ -55,7 +55,7 @@ public class InvertedIndexMovieSearchService implements MovieSearchService, Init
             return new ArrayList<>();
         }
 
-        HashSet<Long> indexResult = getIntersectionSetResult(queryText, moviesInvertTableMap, queryTexts);
+        TreeSet<Long> indexResult = getIntersectionSetResult(queryText, moviesInvertTableMap, queryTexts);
 
         List<Movie> searchResult = new ArrayList<>();
         indexResult.forEach(i -> {
@@ -66,8 +66,8 @@ public class InvertedIndexMovieSearchService implements MovieSearchService, Init
         return searchResult;
     }
 
-    private HashSet<Long> getIntersectionSetResult(String queryText, Map<String, HashSet<Long>> moviesInvertTableMap, String[] queryTexts) {
-        HashSet<Long> indexResult = new HashSet<>();
+    private TreeSet<Long> getIntersectionSetResult(String queryText, Map<String, TreeSet<Long>> moviesInvertTableMap, String[] queryTexts) {
+        TreeSet<Long> indexResult = new TreeSet<>();
         if (queryTexts.length > 1) {
             for (String text : queryTexts) {
                 String textLower = text.toLowerCase();
@@ -83,19 +83,19 @@ public class InvertedIndexMovieSearchService implements MovieSearchService, Init
         return indexResult;
     }
 
-    private Map<String, HashSet<Long>> getInvertedIndexHashSetMap(List<Movie> movies) {
-        Map<String, HashSet<Long>> moviesInvertTableMap = new HashMap<>();
+    private Map<String, TreeSet<Long>> getInvertedIndexHashSetMap(List<Movie> movies) {
+        Map<String, TreeSet<Long>> moviesInvertTableMap = new HashMap<>();
         movies.forEach(movie -> {
             String[] splitMovieNames = movie.getName().split("\\s+");
             Arrays.stream(splitMovieNames).map(String::toLowerCase).forEach(lowerSplitMovieName -> {
                 if (moviesInvertTableMap.containsKey(lowerSplitMovieName)) {
-                    HashSet<Long> existingMovieSet = moviesInvertTableMap.get(lowerSplitMovieName);
+                    TreeSet<Long> existingMovieSet = moviesInvertTableMap.get(lowerSplitMovieName);
                     existingMovieSet.add(movie.getId());
                     moviesInvertTableMap.put(lowerSplitMovieName, existingMovieSet);
                 } else {
-                    HashSet<Long> newHashSet = new HashSet<>();
-                    newHashSet.add(movie.getId());
-                    moviesInvertTableMap.put(lowerSplitMovieName, newHashSet);
+                    TreeSet<Long> newTreeSet = new TreeSet<>();
+                    newTreeSet.add(movie.getId());
+                    moviesInvertTableMap.put(lowerSplitMovieName, newTreeSet);
                 }
             });
         });
