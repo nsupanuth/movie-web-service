@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Component("simpleMovieSearchService")
 public class SimpleMovieSearchService implements MovieSearchService {
@@ -25,12 +26,10 @@ public class SimpleMovieSearchService implements MovieSearchService {
 
 		MoviesResponse moviesResponse = movieDataService.fetchAll();
 
-		return moviesResponse
-				.stream()
-				.filter(movieData -> containQueryText(movieData.getTitle(), queryText))
-				.map(MovieUtils::mapMovieDataToMovie)
+		return IntStream.range(0, moviesResponse.size())
+				.mapToObj(i -> MovieUtils.mapMovieDataToMovieWithIndex((long) (i + 1), moviesResponse.get(i)))
+				.filter(movieData -> containQueryText(movieData.getName(), queryText))
 				.collect(Collectors.toList());
-
 	}
 
 	private boolean containQueryText(String title, String queryText) {

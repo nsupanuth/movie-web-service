@@ -9,4 +9,8 @@ public class MovieUtils {
         return new Movie(movieData.getTitle(), movieData.getCast());
     }
 
+    public static Movie mapMovieDataToMovieWithIndex(long id, MovieData movieData) {
+        return new Movie(id, movieData.getTitle(), movieData.getCast());
+    }
+
 }

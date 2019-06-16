@@ -1,5 +1,7 @@
 package com.wongnai.interview.movie;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,12 @@ public class Movie {
 	}
 
 	public Movie(String name, List<String> actors) {
+		this.name = name;
+		this.actors = actors;
+	}
+
+	public Movie(Long id, String name, List<String> actors) {
+		this.id = id;
 		this.name = name;
 		this.actors = actors;
 	}

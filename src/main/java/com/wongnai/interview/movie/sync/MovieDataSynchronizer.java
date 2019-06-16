@@ -23,8 +23,12 @@ public class MovieDataSynchronizer {
     @Transactional
     public void forceSync() {
         //TODO: implement this to sync movie into repository
-        if (movieRepository.findAll().size() == 0) {
+        if (movieRepository.findAll().isEmpty()) {
             MoviesResponse moviesResponse = movieDataService.fetchAll();
+
+
+
+
             List<Movie> movies = moviesResponse
                     .stream()
                     .map(MovieUtils::mapMovieDataToMovie)
