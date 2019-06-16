@@ -13,14 +13,17 @@ import java.util.*;
 @Component("invertedIndexMovieSearchService")
 @DependsOn("movieDatabaseInitializer")
 public class InvertedIndexMovieSearchService implements MovieSearchService, InitializingBean {
+
     @Autowired
     private MovieRepository movieRepository;
 
-    private List<Movie> movies;
+    private List<Movie> movies = new ArrayList<>();
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        movies = movieRepository.findAll();
+    public void afterPropertiesSet() {
+        if (movies.isEmpty()) {
+            movies = movieRepository.findAll();
+        }
     }
 
     @Override
