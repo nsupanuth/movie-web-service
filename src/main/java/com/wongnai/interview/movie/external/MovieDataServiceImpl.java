@@ -1,8 +1,10 @@
 package com.wongnai.interview.movie.external;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wongnai.interview.movie.exception.BadRequestAlertException;
 import com.wongnai.interview.movie.exception.InternalServerErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -31,6 +33,10 @@ public class MovieDataServiceImpl implements MovieDataService {
 			ResponseEntity<String> result = restTemplate.getForEntity(MOVIE_DATA_URL, String.class);
 			moviesResponse = objectMapper.readValue(result.getBody(), MoviesResponse.class);
 		} catch (HttpClientErrorException e) {
+			boolean isBadRequest = e.getStatusCode() == HttpStatus.valueOf(400);
+			if (isBadRequest) {
+				throw new BadRequestAlertException("Bad Request from movie datasource", MovieDataServiceImpl.class.getName(), "datasourceError");
+			}
 			throw new InternalServerErrorException(e.getMessage(), MovieDataServiceImpl.class.getName(), "httpClientErrorException");
 		} catch (Exception e) {
 			throw new InternalServerErrorException(e.getMessage(), MovieDataServiceImpl.class.getName(), "exception");
