@@ -2,6 +2,8 @@ package com.wongnai.interview.movie.search;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +13,9 @@ import com.wongnai.interview.movie.MovieSearchService;
 
 @Component("databaseMovieSearchService")
 public class DatabaseMovieSearchService implements MovieSearchService {
+
+	private final Logger log = LoggerFactory.getLogger(DatabaseMovieSearchService.class);
+
 	@Autowired
 	private MovieRepository movieRepository;
 
@@ -20,6 +25,7 @@ public class DatabaseMovieSearchService implements MovieSearchService {
 		// This database search method must use only MovieRepository.findByNameContains(String), you also have to implement
 		// MovieDataSynchronizer.forceSync() to load all movie data, using MovieDataService, into MovieRepository.
 		// Do not change @Component annotation on this class
+		log.info("Search service with database search");
 		return movieRepository.findByNameContains(queryText.toUpperCase());
 	}
 }

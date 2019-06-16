@@ -1,5 +1,7 @@
 package com.wongnai.interview.movie;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +14,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/movies")
 public class MoviesController {
+
+	private final Logger log = LoggerFactory.getLogger(MoviesController.class);
+
 	/**
 	 * Inject movie search service and use to handle search request.
 	 * <p>
@@ -34,6 +39,7 @@ public class MoviesController {
 
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	public List<Movie> searchTitleWithKeyword(@RequestParam("q") String keyword) {
+		log.info("Rest request to search title with keyword API");
 		return movieSearchService.search(keyword);
 	}
 }
