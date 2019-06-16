@@ -3,6 +3,7 @@ package com.wongnai.interview.movie.search;
 import com.wongnai.interview.movie.Movie;
 import com.wongnai.interview.movie.MovieRepository;
 import com.wongnai.interview.movie.MovieSearchService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
@@ -11,9 +12,16 @@ import java.util.*;
 
 @Component("invertedIndexMovieSearchService")
 @DependsOn("movieDatabaseInitializer")
-public class InvertedIndexMovieSearchService implements MovieSearchService {
+public class InvertedIndexMovieSearchService implements MovieSearchService, InitializingBean {
     @Autowired
     private MovieRepository movieRepository;
+
+    private List<Movie> movies;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        movies = movieRepository.findAll();
+    }
 
     @Override
     public List<Movie> search(String queryText) {
@@ -34,7 +42,6 @@ public class InvertedIndexMovieSearchService implements MovieSearchService {
         // you have to return can be union or intersection of those 2 sets of ids.
         // By the way, in this assignment, you must use intersection so that it left for just movie id 5.
 
-        List<Movie> movies = movieRepository.findAll();
         Map<String, HashSet<Long>> moviesInvertTableMap = getInvertedIndexHashSetMap(movies);
 
         String[] queryTexts = queryText.split("\\s+");
@@ -91,4 +98,5 @@ public class InvertedIndexMovieSearchService implements MovieSearchService {
         });
         return moviesInvertTableMap;
     }
+
 }

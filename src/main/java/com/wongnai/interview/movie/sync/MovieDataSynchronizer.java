@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,7 @@ public class MovieDataSynchronizer {
     private MovieRepository movieRepository;
 
     @Transactional
-    public void forceSync() throws IOException {
+    public void forceSync() {
         //TODO: implement this to sync movie into repository
         if (movieRepository.findAll().size() == 0) {
             MoviesResponse moviesResponse = movieDataService.fetchAll();
